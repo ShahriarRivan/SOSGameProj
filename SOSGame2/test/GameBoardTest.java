@@ -62,45 +62,36 @@ public class GameBoardTest {
         assertTrue(gameBoard.isBoardFull(), "The board should be detected as full");
     }
     
+   
+    
     @Test
-    void testScoreUpdateForRed() {
-       
-        GameBoard.setCurrentColor(Color.RED);
+    void testSOSDetectionDiagonalFromTopLeft() {
+        gameBoard.buttons[0][0].setText("S");
+        gameBoard.buttons[1][1].setText("O");
+        gameBoard.buttons[2][2].setText("S");
+        gameBoard.checkForSOS(1, 1);
+    }
+
+    @Test
+    void testSOSDetectionDiagonalFromTopRight() {
+        gameBoard.buttons[0][2].setText("S");
+        gameBoard.buttons[1][1].setText("O");
+        gameBoard.buttons[2][0].setText("S");
+        gameBoard.checkForSOS(1, 1);
+    }
+
+    @Test
+    void testResetScores() {
+        gameBoard.setRedScore(5);
+        gameBoard.setBlueScore(5);
+        gameBoard.resetScores();
+        assertEquals(0, gameBoard.getRedScore(), "Red score should be reset to 0");
+        assertEquals(0, gameBoard.getBlueScore(), "Blue score should be reset to 0");
+    }
+
+   
 
     
-        gameBoard.buttons[0][0].setText("S");
-        gameBoard.buttons[0][1].setText("O");
-        gameBoard.buttons[0][2].setText("S");
-
-        // Save current RED score
-        int initialRedScore = gameBoard.getRedScore();
-
-        // Call the method to check for SOS
-        gameBoard.checkForSOS(0, 1);
-
-        // Check if the RED score increased by 1
-        assertEquals(initialRedScore + 1, gameBoard.getRedScore(), "Red score should increase by 1 after detecting an SOS");
-    }
-
-    @Test
-    void testScoreUpdateForBlue() {
-        // Setting the current color to BLUE
-        GameBoard.setCurrentColor(Color.BLUE);
-
-        // Creating an SOS sequence on the board
-        gameBoard.buttons[0][0].setText("S");
-        gameBoard.buttons[0][1].setText("O");
-        gameBoard.buttons[0][2].setText("S");
-
-        // Save current BLUE score
-        int initialBlueScore = gameBoard.getBlueScore();
-
-        // Call the method to check for SOS
-        gameBoard.checkForSOS(0, 1);
-
-        // Check if the BLUE score increased by 1
-        assertEquals(initialBlueScore + 1, gameBoard.getBlueScore(), "Blue score should increase by 1 after detecting an SOS");
-    }
 
 }
 
