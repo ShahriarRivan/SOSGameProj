@@ -4,16 +4,25 @@ import javax.swing.*;
 import java.awt.*;
 
 
-public class SOSGame2 {
-	private static GameBoard gameBoard;
-	public static void main(String[] args) {
+public class SOSGame2 
+{
+	 private static GameBoard gameBoard;
+	 public static JRadioButton redButton = new JRadioButton("Red");
+     public static JRadioButton blueButton = new JRadioButton("Blue");
+     static JRadioButton sButton = new JRadioButton("S"); 
+     static JRadioButton oButton = new JRadioButton("O"); 
+     
+	 public static void main(String[] args) 
+	 {
 		
 		
-	    SwingUtilities.invokeLater(new Runnable() {
+	    SwingUtilities.invokeLater(new Runnable() 
+	    {
 	    	
 	    	
 	        @Override
-	        public void run() {
+	        public void run() 
+	        {
 	            JFrame frame = new JFrame("SOS Game");
 	            frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 	            frame.setLayout(new BorderLayout());
@@ -43,26 +52,39 @@ public class SOSGame2 {
         });
     }
 	
-	public static JPanel initializeControlPanel() {
+	public static void updatePlayerSelection() 
+	{
+	    if (GameBoard.getCurrentColor() == Color.RED) 
+	    {
+	        redButton.setSelected(true);
+	    } 
+	    else 
+	    {
+	        blueButton.setSelected(true);
+	    }
+	}
+	
+	public static JPanel initializeControlPanel() 
+	{
         JPanel panel = new JPanel(new GridLayout(2,1));
 
         // For color choice
         JPanel colorPanel = new JPanel();
-        JRadioButton redButton = new JRadioButton("Red");
-        JRadioButton blueButton = new JRadioButton("Blue");
+       
         ButtonGroup colorGroup = new ButtonGroup();
         colorGroup.add(redButton);
         colorGroup.add(blueButton);
         redButton.setSelected(true);
         redButton.addActionListener(e -> GameBoard.setCurrentColor(Color.RED));
         blueButton.addActionListener(e -> GameBoard.setCurrentColor(Color.BLUE));
+        
         colorPanel.add(redButton);
         colorPanel.add(blueButton);
         
         // For letter choice
         JPanel letterPanel = new JPanel();
-        JRadioButton sButton = new JRadioButton("S");
-        JRadioButton oButton = new JRadioButton("O");
+//        JRadioButton sButton = new JRadioButton("S");
+//        JRadioButton oButton = new JRadioButton("O");
         ButtonGroup letterGroup = new ButtonGroup();
         letterGroup.add(sButton);
         letterGroup.add(oButton);
@@ -77,46 +99,93 @@ public class SOSGame2 {
         return panel;
     }
 	//
-	public static void initializeMenu(JFrame frame) {
-        JMenuBar menuBar = new JMenuBar();
-        JMenu gameMenu = new JMenu("Menu");
-        JMenuItem newGame = new JMenuItem("New Game");
-        newGame.addActionListener(e -> {
-            int boardSize = promptForBoardSize();
-            
+	public static void initializeMenu(JFrame frame) 
+	{
+	    JMenuBar menuBar = new JMenuBar();
+	    JMenu gameMenu = new JMenu("Menu");
+	    JMenuItem newGame = new JMenuItem("New Game");
 
-            // Create a new game board with the selected size
-            GameBoard newGameBoard = new GameBoard(boardSize);
+	    newGame.addActionListener(e -> 
+	    {
+	        int boardSize = promptForBoardSize();
+	        GameBoard.setCurrentLetter("S");
+	        sButton.setSelected(true);
+	        
 
-            // Remove the old game board from the frame
-            frame.getContentPane().remove(gameBoard);
-            gameBoard = newGameBoard; // Update the reference to the current game board
-            frame.add(gameBoard, BorderLayout.CENTER);
+	        // Create a new game board with the selected size
+	        GameBoard newGameBoard = new GameBoard(boardSize);
 
-            // Refresh the frame contents
-            frame.revalidate();
-            frame.repaint();
+	        // Remove the old game board from the frame
+	        frame.getContentPane().remove(gameBoard);
+	        gameBoard = newGameBoard; // Update the reference to the current game board
+	        frame.add(gameBoard, BorderLayout.CENTER);
 
-            frame.pack();
-            frame.setLocationRelativeTo(null);
-        });
+	        // Refresh the frame contents
+	        frame.revalidate();
+	        frame.repaint();
 
-        gameMenu.add(newGame);
-        menuBar.add(gameMenu);
-        frame.setJMenuBar(menuBar);
-    }
+	        frame.pack();
+	        frame.setLocationRelativeTo(null);
+	    });
+
+	    gameMenu.add(newGame);
+	    menuBar.add(gameMenu);
+	    frame.setJMenuBar(menuBar);
+	}
 	
 	
-	 public static int promptForBoardSize() {
-         String result = JOptionPane.showInputDialog(null, "Enter board size (e.g., 8 for 8x8):", "New Game", JOptionPane.PLAIN_MESSAGE);
-         int boardSize = 8; // default size
-         try {
-             boardSize = Integer.parseInt(result);
-         } catch (NumberFormatException e) {
-             JOptionPane.showMessageDialog(null, "Invalid input. Using default size of 8x8.", "Warning", JOptionPane.WARNING_MESSAGE);
-         }
-         return boardSize;
-     }
+	
+
+	
+	
+	public static int promptForBoardSize() 
+	{
+	    Object[] possibleValues = { "3", "4", "5", "6", "7", "8" };
+	    int selectedOption = JOptionPane.showOptionDialog(null,
+	            "Select a board size:", "New Game",
+	            JOptionPane.DEFAULT_OPTION, JOptionPane.PLAIN_MESSAGE, null,
+	            possibleValues, possibleValues[5]);
+
+	    int boardSize = 8; // default size
+	    if (selectedOption >= 0 && selectedOption <= 5) 
+	    {
+	        boardSize = Integer.parseInt((String) possibleValues[selectedOption]);
+	    } 
+	    else if (selectedOption == -1) 
+	    {
+	        // User closed the dialog box
+	        System.exit(0); // Close the application
+	    }
+	    else 
+	    {
+	        JOptionPane.showMessageDialog(null, "Invalid input. Using default size of 8x8.", "Warning", JOptionPane.WARNING_MESSAGE);
+	    }
+
+	    // Prompt for game mode
+	    Object[] options = {"Simple", "General"};
+	    int n = JOptionPane.showOptionDialog(null,
+	            "Choose a game mode:",
+	            "Game Mode",
+	            JOptionPane.DEFAULT_OPTION,
+	            JOptionPane.QUESTION_MESSAGE,
+	            null,
+	            options,
+	            options[1]);
+
+	    if (n == 0) 
+	    {
+	        GameBoard.setGameMode("simple");
+	    } 
+	    else 
+	    {
+	        GameBoard.setGameMode("general");
+	    }
+
+	    return boardSize;
+	}
+
+
+
      
 	//
 	
